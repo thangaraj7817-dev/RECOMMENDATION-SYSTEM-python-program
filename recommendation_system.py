@@ -1,0 +1,62 @@
+# Task 4: Recommendation System using Collaborative Filtering
+
+import pandas as pd
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Step 1: Load Dataset
+data = {
+    'User': ['A','A','A','B','B','C','C','C','D','D'],
+    'Item': ['Item1','Item2','Item3','Item1','Item3','Item2','Item3','Item4','Item1','Item4'],
+    'Rating': [5,3,4,4,5,2,5,4,3,5]
+}
+df = pd.DataFrame(data)
+print("Dataset:\n", df)
+
+# Step 2: Create User-Item Matrix
+user_item_matrix = df.pivot_table(index='User', columns='Item', values='Rating').fillna(0)
+print("\nUser-Item Matrix:\n", user_item_matrix)
+
+# Step 3: Compute User Similarity
+user_similarity = cosine_similarity(user_item_matrix)
+user_similarity_df = pd.DataFrame(user_similarity, index=user_item_matrix.index, columns=user_item_matrix.index)
+print("\nUser Similarity:\n", user_similarity_df)
+
+# Step 4: Function to Recommend Items
+def recommend_items(user, matrix, similarity_df, top_n=2):
+    similar_users = similarity_df[user].sort_values(ascending=False)[1:]  # exclude self
+    user_ratings = matrix.loc[user]
+    recommendations = pd.Series(dtype=float)
+    
+    for other_user, sim in similar_users.items():
+        other_ratings = matrix.loc[other_user]
+        recs = other_ratings * sim
+        recommendations = recommendations.add(recs, fill_value=0)
+    
+    # Remove items already rated
+    recommendations = recommendations[user_ratings==0]
+    return recommendations.sort_values(ascending=False).head(top_n)
+
+# Step 5: Make Recommendations for All Users
+folder_path = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(folder_path, "recommendation_results.txt")
+
+with open(file_path, "w") as file:
+    for user in user_item_matrix.index:
+        recs = recommend_items(user, user_item_matrix, user_similarity_df)
+        print(f"\nRecommended Items for User {user}:\n{recs}")
+        file.write(f"Recommended Items for User {user}:\n")
+        for item, score in recs.items():
+            file.write(f"{item} (Score: {score:.2f})\n")
+        file.write("\n")
+
+print(f"\n✅ Recommendations saved to {file_path}")
+
+# Step 6: Visualize User Similarity Heatmap
+plt.figure(figsize=(6,5))
+sns.heatmap(user_similarity_df, annot=True, cmap='coolwarm')
+plt.title("User Similarity Heatmap")
+plt.show()

@@ -1,0 +1,14 @@
+Recommended Items for User A:
+Item4 (Score: 4.01)
+
+Recommended Items for User B:
+Item4 (Score: 3.94)
+Item2 (Score: 3.81)
+
+Recommended Items for User C:
+Item1 (Score: 6.60)
+
+Recommended Items for User D:
+Item3 (Score: 5.62)
+Item2 (Score: 2.11)
+
