@@ -88,4 +88,5 @@ Overall, this task gave me valuable hands-on experience in applying machine lear
 
 OUTPUT :
 
+<img width="600" height="500" alt="Image" src="https://github.com/user-attachments/assets/0787743e-4d48-4893-b6d9-31f4159be9dd" />
 
